@@ -1,0 +1,50 @@
+<%- include('../views/partials/head') %>
+<h1 class="text-3xl font-bold tracking-tight">Task board</h1>
+<p class="mt-2 text-sm text-slate-500">Internal only. Not linked from any facade.</p>
+
+<% if (!connected) { %>
+  <div class="mt-6 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+    MongoDB is not connected, so tasks can't be loaded or saved. Check that <code>MONGO_URI</code> is set in <code>.env</code> and that the database is running.
+  </div>
+<% } %>
+
+<form method="post" action="<%= base %>" class="mt-8 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-[1fr_auto]">
+  <input name="title" required placeholder="New task title" class="rounded-md border border-slate-300 px-3 py-2 text-sm">
+  <select name="status" class="rounded-md border border-slate-300 px-3 py-2 text-sm">
+    <% statuses.forEach((s) => { %><option value="<%= s %>"><%= s %></option><% }) %>
+  </select>
+  <textarea name="description" rows="2" placeholder="Description (optional)" class="rounded-md border border-slate-300 px-3 py-2 text-sm sm:col-span-2"></textarea>
+  <button class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 sm:col-span-2">Add task</button>
+</form>
+
+<div class="mt-8 grid gap-6 md:grid-cols-3">
+  <% statuses.forEach((status) => { %>
+    <% const column = tasks.filter((t) => t.status === status); %>
+    <section>
+      <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <%= status %> <span class="ml-1 text-slate-400"><%= column.length %></span>
+      </h2>
+      <div class="space-y-3">
+        <% column.forEach((task) => { %>
+          <details class="rounded-lg border border-slate-200 bg-white">
+            <summary class="cursor-pointer px-4 py-3 text-sm font-medium"><%= task.title %></summary>
+            <div class="space-y-3 border-t border-slate-100 p-4">
+              <form method="post" action="<%= base %>/<%= task._id %>/update" class="space-y-2">
+                <input name="title" required value="<%= task.title %>" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm">
+                <textarea name="description" rows="3" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"><%= task.description %></textarea>
+                <select name="status" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm">
+                  <% statuses.forEach((s) => { %><option value="<%= s %>" <%= s === task.status ? 'selected' : '' %>><%= s %></option><% }) %>
+                </select>
+                <button class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">Save</button>
+              </form>
+              <form method="post" action="<%= base %>/<%= task._id %>/delete">
+                <button class="text-sm text-red-600 hover:underline">Delete</button>
+              </form>
+            </div>
+          </details>
+        <% }) %>
+      </div>
+    </section>
+  <% }) %>
+</div>
+<%- include('../views/partials/foot') %>
