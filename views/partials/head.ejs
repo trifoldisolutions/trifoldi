@@ -3,19 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= title %> · <%= facade.name %> · Trifoldi</title>
+  <title><%= locals.documentTitle || `${title} · ${facade.name} · Trifoldi` %></title>
   <link rel="stylesheet" href="/output.css">
+  <script src="/vendor/iconify-icon.min.js" defer></script>
+  <script src="/vendor/gsap/gsap.min.js" defer></script>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
-  <header class="border-b border-slate-200 bg-white">
+<body class="min-h-screen bg-alto-50 antialiased">
+  <header class="border-b border-alto-200 bg-white">
     <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
       <a href="<%= facade.home %>" class="text-lg font-semibold tracking-tight">
         Trifoldi
-        <span class="ml-1 rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600"><%= facade.name %></span>
+        <span class="ml-1 rounded bg-alto-100 px-2 py-0.5 text-xs font-medium text-alto-600"><%= facade.name %></span>
       </a>
-      <nav class="flex gap-5 text-sm text-slate-600">
+      <nav class="flex gap-5 text-sm text-alto-600">
         <% facade.nav.forEach((link) => { %>
-          <a href="<%= link.href %>" class="hover:text-slate-900"><%= link.label %></a>
+          <a href="<%= link.href %>" class="hover:text-bunker-950"><%= link.label %></a>
         <% }) %>
       </nav>
     </div>

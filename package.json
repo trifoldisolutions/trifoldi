@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "tw": "tailwindcss -i ./src/input.css -o ./public/output.css --watch",
+    "tw": "tailwindcss -i ./src/input.css -o ./public/output.css --watch=always",
     "dev:all": "concurrently -k -n TW,SERVER -c yellow,cyan \"npm run tw\" \"npm run dev\""
   },
   "keywords": [],
@@ -15,6 +15,8 @@
     "dotenv": "^18.0.1",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
+    "gsap": "^3.15.0",
+    "iconify-icon": "^3.0.3",
     "mongoose": "^9.10.1"
   },
   "devDependencies": {

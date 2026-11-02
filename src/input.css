@@ -1,1 +1,112 @@
 @import "tailwindcss";
+
+/* Fontshare fonts (ITF Free Font License), self-hosted variable WOFF2 from public/fonts/ */
+@font-face {
+  font-family: "Supreme";
+  src: url("/fonts/Supreme-Variable.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Supreme";
+  src: url("/fonts/Supreme-VariableItalic.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bevellier";
+  src: url("/fonts/Bevellier-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bevellier";
+  src: url("/fonts/Bevellier-VariableItalic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@theme {
+  --font-supreme: "Supreme", ui-sans-serif, system-ui, sans-serif;
+  --font-bevellier: "Bevellier", ui-sans-serif, system-ui, sans-serif;
+  /* Supreme is the site-wide default; Tailwind's base styles read --font-sans */
+  --font-sans: var(--font-supreme);
+
+  /* Type scale: ratio 1.2 (minor third) around a 1rem base, which is 15px (see html below).
+     Each step multiplies or divides its neighbour, so changing --type-scale retunes every text-* size.
+     Line heights keep Tailwind's defaults, which are unitless ratios and follow the font size. */
+  --type-scale: 1.2;
+  --text-base: 1rem;
+  --text-sm: calc(var(--text-base) / var(--type-scale));
+  --text-xs: calc(var(--text-sm) / var(--type-scale));
+  --text-lg: calc(var(--text-base) * var(--type-scale));
+  --text-xl: calc(var(--text-lg) * var(--type-scale));
+  --text-2xl: calc(var(--text-xl) * var(--type-scale));
+  --text-3xl: calc(var(--text-2xl) * var(--type-scale));
+  --text-4xl: calc(var(--text-3xl) * var(--type-scale));
+  --text-5xl: calc(var(--text-4xl) * var(--type-scale));
+  --text-6xl: calc(var(--text-5xl) * var(--type-scale));
+  --text-7xl: calc(var(--text-6xl) * var(--type-scale));
+  --text-8xl: calc(var(--text-7xl) * var(--type-scale));
+  --text-9xl: calc(var(--text-8xl) * var(--type-scale));
+
+  /* Bunker is the main brand color: bg-bunker-500, text-bunker-950, border-bunker-200, etc. */
+  --color-bunker-50: #f5f7fa;
+  --color-bunker-100: #ebeff3;
+  --color-bunker-200: #d2dce5;
+  --color-bunker-300: #abbdce;
+  --color-bunker-400: #7e9ab2;
+  --color-bunker-500: #5e7e99;
+  --color-bunker-600: #4a657f;
+  --color-bunker-700: #3c5268;
+  --color-bunker-800: #354657;
+  --color-bunker-900: #303c4a;
+  --color-bunker-950: #101419;
+
+  /* Alto is the gray scale of the platform, for backgrounds, borders and muted text:
+     bg-alto-50, border-alto-200, text-alto-600, etc. */
+  --color-alto-50: #fafafa;
+  --color-alto-100: #f5f5f5;
+  --color-alto-200: #e6e6e6;
+  --color-alto-300: #d9d9d9;
+  --color-alto-400: #a3a3a3;
+  --color-alto-500: #727272;
+  --color-alto-600: #535353;
+  --color-alto-700: #404040;
+  --color-alto-800: #272727;
+  --color-alto-900: #1a1a1a;
+  --color-alto-950: #0b0b0b;
+}
+
+/* Bevellier for headings; everything else inherits Supreme */
+@layer base {
+  /* Base font size: 1rem is 15px, and every rem-based size and spacing utility scales from it */
+  html {
+    font-size: 15px;
+  }
+
+  /* Text color on light backgrounds is bunker-950 */
+  body {
+    color: var(--color-bunker-950);
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-bevellier);
+  }
+
+  /* Reserve the icon's box before the web component loads so the page doesn't shift.
+     Skipped when width/height attributes are set, since those size the icon themselves. */
+  iconify-icon:not([width]):not([height]) {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+  }
+}

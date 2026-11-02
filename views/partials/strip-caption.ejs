@@ -1,0 +1,36 @@
+<%#
+  One photo's caption in the homepage strip (see the strip's comment in views/public/index.ejs): the project's name
+  and, under it, its category. It is laid over the bottom-left of the photo and belongs inside the photo's wrapper,
+  which is the `group` that drives it. `name` and `category` are its two lines. It takes no pointer events, so the
+  photo underneath keeps the hover.
+  While the pointer is over the photo a dark gradient fades in behind the caption (so the white text reads on any
+  photo), the name's letters rise one after another out of a mask, as the headline's do (public/js/loader.js), and
+  the category rises out of a mask of its own, as one line, a moment after the name has started. All of it has the
+  same ease (power3.out, as a cubic-bezier) and takes 600ms; the letters are staggered by 30ms each and the category
+  starts 200ms in. When the pointer leaves everything drops back together, quicker (300ms), with no stagger or
+  delay: a transition takes the delay and duration of the state it is heading to, so those live on the hover side.
+  With reduced motion there is no transition on the text, so it simply appears with the gradient.
+  The name: a transform needs a box, so each letter is its own inline-block span, and the split is made here, not in
+  the browser: the CSS does all of the animating and there is no script to wait for. Each letter's place in the
+  order is its --i, set below. The spans are aria-hidden and the name is read from a visually hidden copy instead,
+  so it is announced as one word, not letter by letter. A space becomes a non-breaking one so that its span keeps
+  its width. The mask is the name's own box, tall enough (leading) for the tail of a Q; the letters start a full
+  letter height below it. The type is Bevellier, like the wordmark and the headings, in the headline's uppercase
+  (inherited from the <h1>), at the photo cursor's fluid size (index.ejs), and the padding follows the window the
+  same way. Bevellier is drawn tight, for large sizes: at a caption's size the wordmark's tight tracking makes
+  neighbouring capitals touch (TE, RI), so the name gets a little extra (tracking-wide) instead. The classes on the
+  letters' parent reach the letters through `*:` (a direct child), so the letters carry only their --i.
+  The category: Supreme, the site's text face, medium, in the same uppercase, at half the name's size but never
+  below the type scale's text-xs, and a little softer than the name (white at 80%). It is not split into letters, so
+  when the box is too narrow for it, it wraps onto a second line, and its mask is as tall as its text.
+%>
+<span class="pointer-events-none absolute inset-0 flex flex-col items-start justify-end p-[max(0.75rem,1.25vw)] text-white [font-size:clamp(0.9rem,1.5vw,1.9rem)]">
+  <span aria-hidden="true" class="absolute inset-0 bg-linear-to-t from-bunker-950/75 to-transparent to-55% opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+  <span class="relative block overflow-clip whitespace-nowrap font-bevellier font-semibold leading-[1.2] tracking-wide">
+    <span class="sr-only"><%= name %></span>
+    <span aria-hidden="true" class="block *:inline-block *:translate-y-full *:transition-[translate] *:duration-300 *:ease-[cubic-bezier(0.215,0.61,0.355,1)] group-hover:*:translate-y-0 group-hover:*:duration-600 group-hover:*:delay-[calc(var(--i)*30ms)] motion-reduce:*:transition-none"><% [...name].forEach((letter, i) => { %><span style="--i: <%= i %>"><%= letter === ' ' ? ' ' : letter %></span><% }) %></span>
+  </span>
+  <span class="relative block overflow-clip">
+    <span class="block translate-y-full font-supreme font-medium leading-[1.3] tracking-wide text-white/80 transition-[translate] duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] [font-size:max(var(--text-xs),0.5em)] group-hover:translate-y-0 group-hover:delay-200 group-hover:duration-600 motion-reduce:transition-none"><%= category %></span>
+  </span>
+</span>

@@ -1,12 +1,322 @@
-<%- include('../partials/head') %>
-<section class="py-16 text-center">
-  <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Trifoldi</h1>
-  <p class="mx-auto mt-4 max-w-xl text-lg text-slate-600">
-    Placeholder landing page. Replace this copy once the project's requirements are defined.
-  </p>
-  <div class="mt-8 flex justify-center gap-3">
-    <a href="/app" class="rounded-md bg-slate-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-700">Open the app</a>
-    <a href="/about" class="rounded-md border border-slate-300 px-5 py-2.5 text-sm font-medium hover:bg-white">Learn more</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= locals.documentTitle || title %></title>
+  <link rel="preload" href="/fonts/Bevellier-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Supreme-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/output.css">
+  <script src="/vendor/gsap/gsap.min.js" defer></script>
+  <script src="/vendor/gsap/SplitText.min.js" defer></script>
+  <script src="/vendor/gsap/ScrollTrigger.min.js" defer></script>
+  <script src="/vendor/iconify-icon.min.js" defer></script>
+  <script src="/js/loader.js" defer></script>
+  <script src="/js/scroll-reveal.js" defer></script>
+  <noscript><style>#loader { display: none; }</style></noscript>
+</head>
+<body class="flex min-h-dvh flex-col antialiased">
+  <!-- Loading screen: outlined wordmark that fills as the page loads, then slides up into the nav (public/js/loader.js). -->
+  <div id="loader" aria-hidden="true" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+    <div id="loader-word" class="relative font-bevellier text-8xl font-semibold leading-none tracking-tight opacity-0">
+      <span class="block [-webkit-text-fill-color:transparent] [-webkit-text-stroke:1px_currentColor]">.trifoldi</span>
+      <span id="loader-fill" class="absolute inset-0 block" style="clip-path: inset(100% 0 0 0)">.trifoldi</span>
+    </div>
   </div>
-</section>
-<%- include('../partials/foot') %>
+
+  <!-- Hero screen: the nav plus <main>. A wrapper, rather than flex-1 on <main> alone filling whatever's left
+       in <body>, so the footer below (a second full screen in its own right, see its comment) can size itself
+       independently instead of competing with <main> for the same leftover space — see the footer's comment
+       for why that competition used to matter here.
+       The headline sits a little above the middle of the screen, and the footer follows it up by the same
+       amount, so the gap between the two is what it would be with the headline centred. Both come from one
+       value, --hero-lift: the wrapper is that much short of a full screen, so the footer starts that much
+       higher and its eyebrow (flush at its top) peeks in at the bottom of the first screen, and <main> gives
+       the same amount back as bottom padding, so the headline, centred in what is left, rises by the whole
+       lift rather than half of it. Change --hero-lift to move both together; 0 centres the headline in a full
+       screen again, with the footer starting just below it. -->
+  <div class="flex min-h-[calc(100dvh_-_var(--hero-lift))] flex-col [--hero-lift:10dvh]">
+  <!-- The <nav> sets the side margins and the inner box holds the row plus the line under it, so the line
+       always spans the same width as the content. Each link sits in its own <li>; public/js/loader.js
+       slides the links up out of these containers and grows the line from the middle out to the sides. -->
+  <nav aria-label="Main" class="px-6 lg:px-20">
+    <div class="relative grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center py-4">
+      <ul data-nav-links="left" class="hidden items-center gap-9 justify-self-start lg:flex">
+        <li><a href="/motion" class="block font-semibold uppercase">Motion</a></li>
+        <li><a href="/design" class="block font-semibold uppercase">Design</a></li>
+        <li><a href="/lab" class="block font-semibold uppercase">Lab</a></li>
+      </ul>
+      <a id="nav-mark" href="/" class="col-start-2 font-bevellier text-3xl font-semibold tracking-tight">.trifoldi</a>
+      <ul data-nav-links="right" class="hidden items-center gap-9 justify-self-end lg:flex">
+        <li><a href="/about" class="block font-semibold uppercase">About</a></li>
+        <li><a href="/contest" class="block font-semibold uppercase">Contest</a></li>
+        <li><a href="/career" class="block font-semibold uppercase">Career</a></li>
+      </ul>
+      <span id="nav-line" aria-hidden="true" class="absolute inset-x-0 bottom-0 h-[2px] bg-alto-300"></span>
+    </div>
+  </nav>
+
+  <!-- Headline: one <h1>, two lines, set in Supreme ExtraBold (the mockup's headline is Supreme, not the
+       Bevellier h1 default). Sized to the viewport width, as in the mockup (150px at 1920), and capped at that
+       size. Weight, size and tracking were fitted to the mockup's measured letter shapes and line widths.
+       The <body> is a full-screen column: the hero (the wrapper around this nav and <main>, see its comment
+       above), then the footer, a second full screen in its own right (see its comment). <main> is flex-1
+       within the hero wrapper and a column, so it centres the headline and the project info row under it (see
+       the info's comment, after the <h1>) as one block in whatever's left after the nav and its own bottom
+       padding (the lift, see the wrapper's comment). In a window too short for the nav, headline and strip
+       together, the wrapper just grows past its budget to fit them, with the headline right under the nav and
+       the lift still below it.
+       Each line is a row: the text, then a round outline button after its last word (a plus on the top line, an
+       external-link arrow on the bottom one). The buttons sit beside the text spans, not inside them, so the
+       letter split in public/js/loader.js never touches them; it also shows them once the letters have landed.
+       Their size, gap and drop from the line's top are in em, so they follow the fluid headline size; only the
+       size stops shrinking (at 1.75rem) so they stay usable on a phone. The <h1> is named from the two text
+       spans, which keeps the buttons and the photos out of its accessible name.
+       The two lines of text sit one on top of the other, and the photo strip is a third row under them, inside
+       the <h1> so the block stays centred as one. It is decorative (empty alt) and full-bleed: the negative side
+       margins cancel <main>'s padding (keep them equal to it) and the fourth photo runs off the right edge, as
+       in the mockup. Sizes are the mockup's at 1920 (photos 523 x 274, gaps 21, 36 from the text's letters to
+       the strip) in vw, so they scale with the headline and 3.5 photos show at any width. The 0.09em top margin
+       is what is left of that 36 once the bottom line box's own 22px under the letters is counted.
+       These classes are the strip's resting state. public/js/loader.js collapses every photo's wrapper to a
+       2px line, so the text sits on its own as it starts to animate, then grows the wrappers back to
+       their full height as soon as the top line has landed, each on its own timing. A wrapper is one of the
+       rectangles: it clips its photo (overflow-clip) and keeps it centred (items-center), so the photo is
+       uncovered from the middle outwards as the wrapper grows. The row is as tall as its tallest wrapper, and
+       it takes real room in the flow, so <main>'s centring pushes the two lines up as it grows.
+       overflow-x-clip on the row is only for the fourth photo running off the right edge.
+       The photos sit in one track, which takes over the row's gap and adds one more after the last photo
+       (padding), so the track is exactly one cycle of the strip wide: photo, gap, photo, gap, ... From the
+       viewer's side nothing changes. public/js/loader.js lays a clone of the track (aria-hidden) beside it
+       as the page loads and scrolls both by one track width, right to left, for ever, from the start (the
+       reveal included). The clone carries on where the original ends, so the jump back at the end of each cycle isn't visible. The gaps
+       and widths are all in vw, so a track is always wider than the screen and two are enough at any size.
+       The scroll stands still while the pointer is over a photo (listeners on the row, so the clone counts),
+       and a round button with an arrow (data-strip-cursor, at the end of the <body>) takes the pointer's place.
+       The strip can also be scrolled by hand (a wheel flick, a swipe or a drag along the row, see
+       public/js/loader.js). The row is touch-pan-y, so a finger moving along it belongs to the strip while one
+       moving up and down still scrolls the page, and select-none, so a drag doesn't select anything.
+       A tiny round button under the strip's right end (data-strip-toggle) pauses and resumes the strip's own
+       scroll; scrolling by hand still works while it is paused. It is at the right end of the project info row,
+       level with the project's name (see the info's comment, after the <h1>). The button is hidden (the
+       attribute) until public/js/loader.js finds there is a scroll to pause, so without the script or with reduced
+       motion it isn't there, and the script pops it in once the strip is open. It has two icons, the pause (IconMind)
+       and a play triangle drawn to match it, because the pack has no plain one (24 grid, stroke 1.5, round ends);
+       the script shows one at a time by their hidden attribute and updates the button's label.
+       The photos rest in grayscale and get their colours back while the pointer is over them, and while the photo
+       is the active project's (data-active on the wrapper, see the project info's comment after the <h1>; the
+       wrapper is the `group`, so the <img> reads it through group-data-active). It is a filter on
+       the <img> itself, and the transition covers only the filter (transition-[filter], not the plain
+       transition), because public/js/loader.js tweens the same <img>'s opacity for the reveal and a CSS
+       transition on opacity would lag behind it. The clone copies these classes, so it behaves the same.
+       Once the strip scrolls, public/js/loader.js also draws every <img> a fifth bigger than its box and slides it
+       about inside, for a parallax (stripParallax there): the box's own overflow-clip hides what sticks out, the
+       layout is untouched (it is a transform) and the transition doesn't cover it, as it doesn't cover opacity.
+       With reduced motion, where the strip never scrolls, the photos keep their own size.
+       Each photo also carries a caption, its project's name with its category under it, laid over the bottom-left
+       corner of its own box: while the pointer is over the photo, a dark gradient fades in, the name's letters rise
+       one after another out of a mask (in Bevellier) and the category rises after them, as a line. The markup is
+       views/partials/strip-caption.ejs (its comment has the details), included once per photo with `name` and
+       `category`. The same two are on the wrapper as data-project-name and data-project-category, for the project
+       info under the strip (the clone copies them too). It is the wrapper's second child and takes no pointer events, so the <img> underneath keeps the
+       hover (and its grayscale filter) and the scroll's hover check still finds the photo. The wrapper is the
+       `group` that drives it, so the clone gets it too, it moves with its photo, and it is clipped with it while
+       the strip opens. The captions are text, read once (the clone is aria-hidden) and, like the photos, outside
+       the <h1>'s accessible name. As it is a sibling of the <img>, not a child, it stays put in the box while the
+       photo slides under it.
+       The photos are the project covers in assets/project_public_covers (ppc001 to ppc004), served from that
+       folder itself at /project_public_covers (a static mount in server.js), with no copy in public/. The list,
+       in order, with each cover's file, name and category, is `projects` in routes/public.js; the strip is one
+       photo per entry. Photos are cropped to the frame by object-cover, from the middle.
+       A click on a photo opens it: it grows from its place in the strip to fill the screen (see the expander at the end
+       of the <body>) and stays there until it is clicked or Escape is pressed, when it shrinks back. The photos are not
+       links yet, so that is all a click does; it is the effect the page transitions will use. -->
+  <main class="flex flex-1 flex-col justify-center px-6 pb-(--hero-lift) lg:px-20">
+    <h1 aria-labelledby="headline-top headline-bottom" class="w-full font-supreme font-extrabold uppercase leading-none tracking-tighter [font-size:min(7.8vw,10rem)]">
+      <span class="flex items-start">
+        <span id="headline-top" data-headline-line>Where <span class="text-alto-400">Ideas</span></span>
+        <button type="button" data-headline-button aria-label="Show more" class="ml-[0.3em] mt-[0.18em] flex size-[max(0.375em,1.75rem)] items-center justify-center rounded-full border border-alto-400 text-alto-400 cursor-pointer transition-colors hover:border-alto-700 hover:text-alto-700">
+          <iconify-icon icon="iconmind:plus-outline-thin" class="[font-size:max(0.165em,0.77rem)]"></iconify-icon>
+        </button>
+      </span>
+      <span class="flex items-start">
+        <span id="headline-bottom" data-headline-line>meet <span class="text-alto-400">expectations</span></span>
+        <button type="button" data-headline-button aria-label="Open" class="ml-[0.3em] mt-[0.18em] flex size-[max(0.375em,1.75rem)] items-center justify-center rounded-full border border-alto-400 text-alto-400 cursor-pointer transition-colors hover:border-alto-700 hover:text-alto-700">
+          <iconify-icon icon="iconmind:arrow-external-outline-thin" class="[font-size:max(0.165em,0.77rem)]"></iconify-icon>
+        </button>
+      </span>
+      <span data-strip class="-mx-6 mt-[0.09em] flex touch-pan-y select-none items-center overflow-x-clip lg:-mx-20">
+        <span data-strip-track class="flex shrink-0 items-center gap-[1.09vw] pr-[1.09vw]">
+          <% projects.forEach((project, i) => { %>
+          <span data-strip-photo data-project-name="<%= project.name %>" data-project-category="<%= project.category %>" <%= i === 0 ? 'data-active' : '' %> class="group relative flex shrink-0 items-center overflow-clip">
+            <img src="/project_public_covers/<%= project.cover %>" alt="" class="block aspect-[523/274] w-[27.24vw] object-cover grayscale transition-[filter] duration-500 hover:grayscale-0 group-data-active:grayscale-0">
+            <%- include('../partials/strip-caption', { name: project.name, category: project.category }) %>
+          </span>
+          <% }) %>
+        </span>
+      </span>
+    </h1>
+
+    <!-- Project info: the name and category of the strip's active project, on the left under the strip, with the
+         pause button (see the strip's comment) at the other end of the row. It doesn't move with the strip. A
+         photo becomes active when its left edge reaches an imaginary vertical line just before the headline's text,
+         which is this row's own left edge, and stays active until the next photo's left edge gets there: the active
+         one is the photo with the nearest left edge at or past the line. It is the one in colour (data-active, see
+         the strip's comment). public/js/loader.js (stripInfo there) works this out
+         every frame while the strip scrolls and, when it changes, slides the name and category up out of their masks
+         and brings the new ones up from below, the name letter by letter and the category as a line, as the photos'
+         captions do; at load they come in as the strip finishes opening. The name is read from a visually hidden copy
+         (data-strip-info-label), since the script splits the visible one into letters (aria-hidden). It isn't a live
+         region: it changes every few seconds by itself, which would be read out over and over.
+         The server renders the project that is active with the strip at rest, which is what stays with reduced motion
+         or without the script: the strip starts with the first photo at the screen's left edge, already at or past
+         the line, so that is the first project, and its photo is the one marked data-active.
+         The type follows the photos' captions (views/partials/strip-caption.ejs): the name in Bevellier at the
+         photo cursor's fluid size, the category in Supreme at half that but never below text-xs, here in the page's
+         colours rather than white. The category doesn't wrap, so a long one can't change the row's height and shift
+         the centred block. The row sets the name's size, so the pause button can sit level with the name's line box
+         (1.2em) through its top margin, in em. -->
+    <% const restingProject = projects[0]; %>
+    <div class="mt-[max(0.75rem,1.25vw)] flex items-start justify-between gap-6 [font-size:clamp(0.9rem,1.5vw,1.9rem)]">
+      <p data-strip-info class="uppercase tracking-wide">
+        <span class="block overflow-clip whitespace-nowrap font-bevellier font-semibold leading-[1.2]">
+          <span data-strip-info-label class="sr-only"><%= restingProject.name %></span>
+          <span data-strip-info-name aria-hidden="true" class="block"><%= restingProject.name %></span>
+        </span>
+        <span class="block overflow-clip">
+          <span data-strip-info-category class="block whitespace-nowrap font-supreme font-medium leading-[1.3] text-alto-500 [font-size:max(var(--text-xs),0.5em)]"><%= restingProject.category %></span>
+        </span>
+      </p>
+      <button type="button" data-strip-toggle hidden aria-label="Pause the photo strip" class="mt-[calc((1.2em_-_1.5rem)/2)] flex size-6 shrink-0 items-center justify-center rounded-full border border-alto-400 text-alto-400 cursor-pointer transition-colors hover:border-alto-700 hover:text-alto-700">
+        <iconify-icon data-strip-toggle-pause icon="iconmind:pause-outline-thin" class="text-[0.95rem]"></iconify-icon>
+        <svg data-strip-toggle-play hidden xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="size-[0.95rem]"><path d="M8 4.5v15l12-7.5Z"/></svg>
+      </button>
+    </div>
+  </main>
+  </div>
+
+  <!-- Footer: the last row of the <body> column (see the hero wrapper above). Its previous design (a divider line
+       mirroring the nav's, this paragraph, and an Inquiries/Question/Socials column list) was dropped for a
+       revamp; the paragraph is the first piece back, with a new scroll-driven colour reveal in place of the
+       old load-triggered slide-up. It starts in a muted alto shade and its words turn to the brand's darkest
+       shade (bunker-950) one after another as the paragraph passes through the viewport (data-scroll-reveal,
+       public/js/scroll-reveal.js), which runs independently of loader.js's load sequence, so it plays whenever
+       the user actually scrolls this far rather than at page load. The old divider line and the right-hand
+       columns remain dropped, pending their own redesign; the "who are we" eyebrow (a small-caps label plus a
+       line filling the rest of the row, unrelated to that old divider) now sits above the paragraph instead,
+       on <footer>'s own px-6 lg:px-20 — the same width as the nav, not the paragraph's own 10%-inset column
+       below it. Lower-case in the markup, not "Who": font-variant-caps only shrinks letters that were
+       actually lower-case, so a capital W would stay full height and read as a mismatched size next to the
+       small caps beside it.
+       The eyebrow peeks in at the bottom of the first screen (see the hero wrapper's comment), so it comes in
+       with the nav at load: public/js/loader.js grows its line (#footer-line) the way it grows the nav's and
+       slides its label (data-footer-item) up out of its row.
+       <footer> is min-h-[200dvh]: one screen for the section's own content, then a second, empty screen's
+       worth of extra scroll room behind it purely so the reveal has somewhere to happen "after" the section
+       has fully arrived, not while it's still scrolling into place — the reveal is meant to wait for that.
+       GSAP's ScrollTrigger pin (which freezes an element in place via a JS-inserted spacer, synthesizing this
+       same kind of room) was tried twice for this and both times the reveal simply never animated, for a
+       reason that couldn't be pinned down without a live browser to inspect — position: sticky, a plain CSS
+       feature with nothing GSAP-specific about how it holds an element in place, is used here instead: the
+       inner div (min-h-dvh flex-col, everything the section actually shows) is sticky top-0, so it scrolls
+       normally until its top reaches the top of the viewport and then holds there — visually frozen, same as
+       a pin would have looked — for exactly as long as <footer>'s extra screen of height beneath it lasts,
+       then releases and scrolls away normally as <footer> runs out. public/js/scroll-reveal.js's own comment
+       covers how the reveal's timing maps onto that held period.
+       Within the inner div, only the paragraph's own wrapper is flex-1 items-center: the eyebrow stays flush
+       at the top on its own pt-11, fixed there regardless of what the paragraph does below it — centring the
+       two as one group, tried briefly, tied the eyebrow's position to the paragraph's height, which wasn't
+       wanted. The paragraph then centres in whatever's left under the eyebrow, the same pattern <main> above
+       uses to centre the headline in whatever's left after the nav.
+       leading-[1] and tracking-[-0.06em] on the paragraph itself are taken from the same values on
+       nexstudio.tech's .about__copy, the site this section is modelled on. That page also caps .about__copy's
+       own width at 16.5ch, for short, punchy line breaks proportional to whatever font-size it ends up at
+       instead of a fixed rem or vw one — left off here, since the paragraph is meant to fill the full width of
+       its own 10%-inset column (10-80-10), not a narrower measure centred within it.
+       The line breaks inside the text are manual, four words each, rather than a width cap: this sentence's
+       words vary too much in length (4 to 13 characters) for any single ch or vw measure to hold every line at
+       four words without sometimes wrapping a fifth short one in or forcing a long one down to three early, so
+       a width answers "how wide" but not reliably "how many" — SplitText's word-by-word colour reveal works
+       the same regardless of where the breaks fall.
+       Each line is now a real, hand-authored pair of nested <span>s rather than a plain line of text ended
+       with a <br>: the outer one (block, overflow-hidden) is the static mask, the inner one (data-line-reveal)
+       is what public/js/scroll-reveal.js slides up out of it, the same technique loader.js already uses for
+       the nav's own links — SplitText's own line-splitting was tried here three separate times first (once
+       with its mask option, once building a mask by hand around lines it detected) and broke the paragraph
+       every time in a way that was never fully explained; hand-authoring the lines directly sidesteps needing
+       SplitText to detect them at all. SplitText's word split for the colour reveal still runs on the whole
+       <p> as before and finds every word regardless of this extra nesting. Retune the breaks themselves, by
+       moving words between spans, if the copy changes.
+       Behind the paragraph sits a ghost grid of square cells (data-cell-grid), empty here and filled in by
+       public/js/scroll-reveal.js, which picks how many columns and rows fit so the cells are exact squares that
+       span the same width as the eyebrow's line. Each cell starts with a faint alto border and switches to a darker
+       one in reading order off the same scroll progress as the words, so the two finish together. The grid is
+       absolutely positioned inside the paragraph's wrapper (which is now relative) so it never affects layout, and
+       the paragraph is relative too, which is all it takes to paint above it. The grid is decorative and, like the
+       reveal itself, only exists when the script runs (nothing without JS or with reduced motion). Once every
+       cell has been highlighted, on a device with a hovering, precise pointer, the cells near the cursor also
+       fill with a faint tint that fades out behind it, and a click or tap on a cell sets off a ripple, a ring
+       expanding from it across the grid that tints the cells it passes and shrinks them briefly (a transform:
+       scale, so nothing around them moves). Neither does anything before that, while the reveal is still under
+       way. The grid takes no pointer events (the paragraph is above it), so the script listens on <footer> and
+       works out the cell from the position. -->
+  <footer class="min-h-[200dvh] px-6 lg:px-20">
+    <div class="sticky top-0 flex min-h-dvh flex-col">
+      <div class="flex items-center gap-4 pt-11">
+        <span data-footer-item class="shrink-0 text-sm font-medium tracking-wide text-alto-500 [font-variant:small-caps]">who are we</span>
+        <span id="footer-line" aria-hidden="true" class="h-[2px] flex-1 bg-alto-300"></span>
+      </div>
+      <div class="relative flex flex-1 items-center px-[10%]">
+        <div data-cell-grid aria-hidden="true" class="pointer-events-none absolute left-0 top-1/2 grid -translate-y-1/2"></div>
+        <p data-scroll-reveal class="relative text-9xl font-extrabold leading-[1] tracking-[-0.06em]"><span class="block overflow-hidden"><span data-line-reveal class="block">Dedicated expert teams which</span></span><span class="block overflow-hidden"><span data-line-reveal class="block">mission is to bring</span></span><span class="block overflow-hidden"><span data-line-reveal class="block">your visionary concept ideas</span></span><span class="block overflow-hidden"><span data-line-reveal class="block">into tangible realities with</span></span><span class="block overflow-hidden"><span data-line-reveal class="block">unparalleled quality and innovation.</span></span></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating contact button: a single round icon button pinned to the bottom-right corner. From lg up it is as far
+       from the bottom as from the right (5rem), which lifts it clear of the footer's last line. -->
+  <a href="/contact" aria-label="Contact" class="fixed bottom-6 right-6 z-40 flex size-14 items-center justify-center rounded-full bg-bunker-950 text-bunker-50 lg:bottom-20 lg:right-20">
+    <iconify-icon icon="iconmind:agent-listen-outline-thin" class="text-2xl"></iconify-icon>
+  </a>
+
+  <!-- Scroll toast: a small dark pill at the bottom of the screen, in the middle, that says to keep scrolling. It
+       is up while the footer's paragraph is held in place and still being revealed (public/js/scroll-reveal.js
+       shows it as the section arrives and takes it away again on scrolling back up out of the section, or on
+       reaching the end of the reveal, when there is nothing left to scroll for). It is the same height as the
+       contact button and sits on the same line as it, so the two are level. It rests invisible and the script
+       is what shows it, so without the script, or with reduced motion (no reveal to scroll through), it never
+       appears. Decorative and pointer-transparent: the text is only a hint at what the scroll does, and
+       everything it points at is readable without it. The arrow bobs to point the way. -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex h-14 items-center justify-center lg:bottom-20">
+    <span data-scroll-toast class="invisible flex items-center gap-2 rounded-full bg-bunker-950 py-3 pl-5 pr-4 text-sm font-medium text-bunker-50">
+      keep scrolling
+      <iconify-icon icon="iconmind:arrow-down-outline-thin" class="text-base"></iconify-icon>
+    </span>
+  </div>
+
+  <!-- Photo cursor: a white round button with an arrow pointing down and to the right, which stands in for the
+       pointer while it is over one of the strip's photos. public/js/loader.js hides the real cursor on the photos,
+       keeps this button centred on the pointer and scales it in and out as the pointer moves onto and off a photo.
+       It is decorative and takes no pointer events, so the photo underneath still gets them and the scroll's
+       hover check sees the photo, not the button. It rests invisible, and the script is what shows it and what
+       hides the real cursor, so without the script, with reduced motion, or on a screen with no hovering pointer
+       nobody is left without a cursor. Its size follows one fluid font size, as the headline's buttons do: the
+       circle is 2.5em wide and the arrow 1em, so both scale with the window, between 1.25rem (small window) and
+       1.9rem (large screen) of font size. -->
+  <span data-strip-cursor aria-hidden="true" class="pointer-events-none invisible fixed left-0 top-0 z-50 flex size-[2.5em] items-center justify-center rounded-full bg-white text-bunker-950 [font-size:clamp(1.25rem,1.5vw,1.9rem)]">
+    <iconify-icon icon="iconmind:arrow-down-right-outline-thin"></iconify-icon>
+  </span>
+
+  <!-- Card expander: what a clicked photo turns into as it grows to fill the screen (public/js/loader.js, stripExpand).
+       It is a copy of the photo, not the photo itself: the photos sit in the scrolling tracks, whose transforms would
+       make a fixed-position photo relative to its track instead of the screen, and in a row that clips. The script sets
+       the picture, the box and the parallax from the photo that was clicked, lays this exactly over that photo and grows
+       it to the screen, so the hand-over is not visible. It rests invisible and the script is what shows it, so without
+       the script nothing covers the page. It is above everything (z-70: the loader and the photo cursor are z-50, the
+       nav's wordmark flies at z-60), takes pointer events while it shows, so that a click on it closes it, and is
+       decorative: the photos are not links yet, so there is nothing for assistive tech to announce. -->
+  <div data-strip-expander aria-hidden="true" class="invisible fixed inset-0 z-[70] cursor-zoom-out overflow-hidden">
+    <img alt="" draggable="false" class="pointer-events-none absolute inset-0 block size-full select-none object-cover">
+  </div>
+</body>
+</html>
