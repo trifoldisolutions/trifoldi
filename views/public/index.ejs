@@ -116,7 +116,7 @@
        Each photo also carries a caption, its project's name with its category under it, laid over the bottom-left
        corner of its own box: while the pointer is over the photo, a dark gradient fades in, the name's letters rise
        one after another out of a mask (in Bevellier) and the category rises after them, as a line. The markup is
-       views/partials/strip-caption.ejs (its comment has the details), included once per photo with `name` and
+       views/public/partials/strip-caption.ejs (its comment has the details), included once per photo with `name` and
        `category`. The same two are on the wrapper as data-project-name and data-project-category, for the project
        info under the strip (the clone copies them too). It is the wrapper's second child and takes no pointer events, so the <img> underneath keeps the
        hover (and its grayscale filter) and the scroll's hover check still finds the photo. The wrapper is the
@@ -124,8 +124,8 @@
        the strip opens. The captions are text, read once (the clone is aria-hidden) and, like the photos, outside
        the <h1>'s accessible name. As it is a sibling of the <img>, not a child, it stays put in the box while the
        photo slides under it.
-       The photos are the project covers in assets/project_public_covers (ppc001 to ppc004), served from that
-       folder itself at /project_public_covers (a static mount in server.js), with no copy in public/. The list,
+       The photos are the project covers in public/img/project_public_covers (ppc001 to ppc004), served from that
+       folder at /project_public_covers (a static mount in server.js). The list,
        in order, with each cover's file, name and category, is `projects` in routes/public.js; the strip is one
        photo per entry. Photos are cropped to the frame by object-cover, from the middle.
        A click on a photo opens it: it grows from its place in the strip to fill the screen (see the expander at the end
@@ -150,7 +150,7 @@
           <% projects.forEach((project, i) => { %>
           <span data-strip-photo data-project-name="<%= project.name %>" data-project-category="<%= project.category %>" <%= i === 0 ? 'data-active' : '' %> class="group relative flex shrink-0 items-center overflow-clip">
             <img src="/project_public_covers/<%= project.cover %>" alt="" class="block aspect-[523/274] w-[27.24vw] object-cover grayscale transition-[filter] duration-500 hover:grayscale-0 group-data-active:grayscale-0">
-            <%- include('../partials/strip-caption', { name: project.name, category: project.category }) %>
+            <%- include('partials/strip-caption', { name: project.name, category: project.category }) %>
           </span>
           <% }) %>
         </span>
@@ -171,7 +171,7 @@
          The server renders the project that is active with the strip at rest, which is what stays with reduced motion
          or without the script: the strip starts with the first photo at the screen's left edge, already at or past
          the line, so that is the first project, and its photo is the one marked data-active.
-         The type follows the photos' captions (views/partials/strip-caption.ejs): the name in Bevellier at the
+         The type follows the photos' captions (views/public/partials/strip-caption.ejs): the name in Bevellier at the
          photo cursor's fluid size, the category in Supreme at half that but never below text-xs, here in the page's
          colours rather than white. The category doesn't wrap, so a long one can't change the row's height and shift
          the centred block. The row sets the name's size, so the pause button can sit level with the name's line box

@@ -34,7 +34,7 @@ trifoldi/
 ├── services/            Shared logic and outside services (email, payments, storage). A large one gets its own folder with an index.js
 ├── views/
 │   ├── partials/        Shared by every section: head.ejs, foot.ejs
-│   ├── public/          Public pages
+│   ├── public/          Public pages, with its own partials in public/partials/
 │   └── admin/           Admin pages, with its own partials in admin/partials/
 ├── src/input.css        Tailwind source, the only CSS file to edit
 ├── public/
@@ -42,13 +42,12 @@ trifoldi/
 │   ├── js/              Browser scripts
 │   ├── img/             Images the site shows
 │   └── fonts/           Self-hosted fonts
-├── assets/              Project cover photos, served at /project_public_covers, and design references
 ├── scripts/             Scripts run by hand, each with its own npm script
 ├── test/                Tests, as name.test.js, run with `node --test`
 └── dev_resources/       Git-ignored and internal: journal, tasks, commit message, prompts, drafts, one-off scripts, source images
 ```
 
-- **Routes:** Add each route to its section's file, with a line in that file's `router.routes` list (`{ method, path, label }`). No routes in `server.js`, apart from the one that serves the Iconify script, and no new route file per feature. Logic that several routes share, or that calls an outside service, goes in `services/`.
+- **Routes:** Add each route to its section's file, with a line in that file's `router.routes` list (`{ method, path, label }`). No routes in `server.js`, and no new route file per feature. Logic that several routes share, or that calls an outside service, goes in `services/`.
 - **Folder names:** No `utils/`, `lib/` or `helpers/`. Helpers go in `services/`, or in `middleware/` if they handle a request.
 - **Views:** Every page goes in its section's folder, never directly in `views/`. The folder already says the section, so name files for what they show: `views/admin/users.ejs`, not `views/admin-users.ejs`.
 - **Local-only files:** Notes, screenshots, logs, prompts, one-off scripts and source images go in `dev_resources/`, not the project root.
@@ -67,7 +66,7 @@ There are no test, lint, or build scripts. What the list above doesn't say:
 - `.env` is gitignored. `PORT` is the port Dispatch's registry assigns `trifoldi` (see the dashboard at http://localhost:3000, or `GET /api/registry`), and Dispatch writes it into `.env` when it starts the project. Look it up there rather than choosing one.
 - `server.js` passes `dbName: 'trifoldi'` explicitly to `mongoose.connect()`. Keep it. The connection is non-blocking, so the server starts even if Mongo is down. There are no models at the moment, so nothing uses the connection until one is added.
 - `SESSION_SECRET` is blank and no session middleware is installed yet.
-- `init_prompt.md` is the one-time scaffold spec and has already been applied. It isn't a description of current state. Two deliberate deviations: `server.js` falls back to port 3001, not the spec's 3008, which is registered to another project (`storiesbyshews`). And there is no App facade (`/app`), which the spec calls for. The project isn't using one for now, and the initial commit still has the removed scaffold if it's needed later.
+- `dev_resources/init_prompt.md` is the one-time scaffold spec and has already been applied. It isn't a description of current state. Two deliberate deviations: `server.js` falls back to port 3001, not the spec's 3008, which is registered to another project (`storiesbyshews`). And there is no App facade (`/app`), which the spec calls for. The project isn't using one for now, and the initial commit still has the removed scaffold if it's needed later.
 
 ## Architecture
 

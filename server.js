@@ -18,13 +18,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Project cover photos (the homepage strip), served straight from their own folder in assets/ rather than copied into public/.
-app.use('/project_public_covers', express.static(path.join(__dirname, 'assets', 'project_public_covers')));
-
-// Iconify web component, served from the installed package instead of a CDN.
-app.get('/vendor/iconify-icon.min.js', (req, res) =>
-  res.sendFile(path.join(__dirname, 'node_modules', 'iconify-icon', 'dist', 'iconify-icon.min.js'))
-);
+// Project cover photos (the homepage strip), at the URL the page has always used.
+app.use('/project_public_covers', express.static(path.join(__dirname, 'public', 'img', 'project_public_covers')));
 
 // GSAP core and plugins (SplitText, ScrollTrigger, ...), served from the installed package.
 app.use('/vendor/gsap', express.static(path.join(__dirname, 'node_modules', 'gsap', 'dist')));
